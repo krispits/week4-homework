@@ -91,6 +91,25 @@ def cmd_clear():
     save_list([])
     print("✓ Saraksts notīrīts.")
 
+def cmd_export():
+    """Eksportē sarakstu teksta failā SMS/WhatsApp formātā."""
+    items = load_list()
+    if not items:
+        print("Saraksts ir tukšs.")
+        return
+
+    lines = ["Iepirkumu saraksts:\n"]
+    for item in items:
+        lines.append(f"• {item['name']} × {item['qty']} — {calc_line_total(item):.2f} EUR")
+
+    lines.append("")
+    lines.append(f"Kopā: {calc_grand_total(items):.2f} EUR ({count_units(items)} vienības)")
+
+    filename = "shopping_export.txt"
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+
+    print(f"✓ Eksportēts: {filename}")
 
 def main():
     if len(sys.argv) < 2:
@@ -99,6 +118,7 @@ def main():
         print("  python shop.py list")
         print("  python shop.py total")
         print("  python shop.py clear")
+        print("  python shop.py export")
         return
 
     command = sys.argv[1].lower()
@@ -111,6 +131,8 @@ def main():
         cmd_total()
     elif command == "clear":
         cmd_clear()
+    elif command == "export":
+        cmd_export()
     else:
         print(f"Kļūda: nezināma komanda '{command}'.")
 
